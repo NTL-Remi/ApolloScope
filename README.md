@@ -1,10 +1,19 @@
 # :mag: ApolloScope - ApolloScape dataset loading tool
 
+[![ApolloScape][apolloscape_badge]][apolloscape_link]
 [![Documentation][documentation_badge]][documentation_link]
 [![Python version][python_version_badge]][python_version_link]
 [![License][license_badge]][license_link]
 
 This is a Python package for visualisation and loading of Baidu's ApolloScape dataset for vehicle vision tasks.
+
+Currently it is only focused on the overlapping [__Lane segmentation__][lane_segmentation] and [__Scene parsing__][scene_parsing] datasets.
+
+[lane_segmentation]: http://apolloscape.auto/lane_segmentation.html
+[scene_parsing]: http://apolloscape.auto/scene.html
+
+[apolloscape_badge]: https://badgen.net/badge/ApolloScape/ApolloScape?icon=https://simpleicons.now.sh/baidu/fff&label&color=black
+[apolloscape_link]: http://apolloscape.auto
 
 [documentation_badge]: https://badgen.net/badge/github/Documentation?icon=https://simpleicons.now.sh/readthedocs/fff&label&color=blue
 [documentation_link]: https://ntl-remi.github.io/ApolloScope/build/html/index.html
