@@ -1,0 +1,13 @@
+# apolloscope package
+-e git+https://github.com/NTL-Remi/ApolloScope.git#egg=apolloscope
+
+# test packages
+coverage
+hypothesis
+pytest
+pytest-cov
+
+# coverage==4.5.3
+# hypothesis==4.31.0
+# pytest==5.0.1
+# pytest-cov==2.7.1

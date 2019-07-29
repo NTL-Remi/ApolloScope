@@ -1,0 +1,8 @@
+# configuration file for coverage.py
+# see: https://coverage.readthedocs.io/en/latest/config.html
+
+[run]
+branch = True
+
+[html]
+directory = coverage_HTML
