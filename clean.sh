@@ -24,17 +24,5 @@ to_remove=(
 # confiramation prompt
 for name in "${to_remove[@]}"  # for each name
 do
-    while true  # until valid answer
-    do
-        read -p "Delete $name [y/n] ? " REPLY
-        case $REPLY in
-            [Yy])
-                remove "$name"
-                break
-                ;;
-            [Nn]) 
-                break
-                ;;
-        esac
-    done
+    remove "$name"
 done
