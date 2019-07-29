@@ -1,4 +1,5 @@
-*.egg-info
-*.pyc
-.venv
+*.egg-info/
+*__pycache__/
+.hypothesis/
+.venv/
 logs/
