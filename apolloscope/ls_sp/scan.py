@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""This module implements functions for scanning LS and SP dataset folders.
+
+Regular expressions for the datasets' file-paths are defined
+and applied to capture labels in order to sort paths in a dataframe.
+The resulting dataframes are not intended to be used as is,
+but as an input material for the building
+of a path :class:`~apolloscope.ls_sp.register.Register`.
+"""
 import os
 import re
 from pathlib import Path
@@ -13,9 +21,9 @@ REGEX_PATH_SEPARATOR = re.escape(os.path.sep)
 """str: Regex-escaped path separator for current OS."""
 
 SP_FOLDER_REGEX = REGEX_PATH_SEPARATOR.join(
-    [r'.*',
-     r'road(?P<road>[0-9]+)_(?P<section>.*?)',
-     r'(?P<subsection>.*?)',
+    [r'\w*',
+     r'road(?P<road>[0-9]+)_(?P<section>\w+?)',
+     r'(?P<subsection>\w+?)',
      r'Record(?P<record>[0-9]+)',
      r'Camera (?P<camera>[0-9]+)'])
 """str: Compiled regex for scene parsing dataset folders."""
@@ -23,8 +31,8 @@ SP_FOLDER_REGEX = REGEX_PATH_SEPARATOR.join(
 SP_DATED_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
     [SP_FOLDER_REGEX,
      r'[0-9]+_(?P<date>[0-9]+)_'
-     r'Camera_[0-9][_.]'
-     r'(?P<file_type>.*?)$']))
+     r'Camera_(?P=camera)+[_.]'
+     r'(?P<file_type>\w+?)$']))
 """re.Pattern: Compiled regex for scene parsing dataset regular files."""
 
 SP_POSE_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
@@ -33,9 +41,9 @@ SP_POSE_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
 """re.Pattern: Compiled regex for scene parsing dataset pose files."""
 
 LS_FOLDER_REGEX = REGEX_PATH_SEPARATOR.join(
-    [r'.*',
-     r'(?P<section>.*?)_road(?P<road>[0-9]+)',
-     r'(?P<subsection>.*?)',
+    [r'\w*',
+     r'(?P<section>\w+?)_road(?P<road>[0-9]+)',
+     r'(?P<subsection>\w+?)',
      r'Record(?P<record>[0-9]+)',
      r'Camera (?P<camera>[0-9]+)'])
 """str: Compiled regex for lane segmentation dataset folders."""
@@ -43,8 +51,8 @@ LS_FOLDER_REGEX = REGEX_PATH_SEPARATOR.join(
 LS_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
     [LS_FOLDER_REGEX,
      r'[0-9]+_(?P<date>[0-9]+)_'
-     r'Camera_[0-9][_.]'
-     r'(?P<file_type>.*?)$']))
+     r'Camera_(?P=camera)+[_.]'
+     r'(?P<file_type>\w+?)$']))
 """re.Pattern: Compiled regex for lane segmentation dataset files."""
 
 
@@ -57,11 +65,11 @@ def scene_parsing(path):
 
     Return:
         pd.DataFrame: A dataframe with columns ``dataset``, ``section``,
-            ``subsection``, ``file_type``, ``road``, ``record``,
-            ``camera``, ``date`` and ``path``.
-            ``path`` contains all the file paths found in the
-            ``path`` directory, and other columns contain labels
-            extracted from them.
+        ``subsection``, ``file_type``, ``road``, ``record``,
+        ``camera``, ``date`` and ``path``.
+        ``path`` contains all the file paths found in the
+        ``path`` directory, and other columns contain labels
+        extracted from them.
     """
     # TODO: move the path checking to a higher level
     # assert path is valid
