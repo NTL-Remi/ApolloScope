@@ -1,2 +1,3 @@
 .coverage
 coverage_HTML/
+test_report.html

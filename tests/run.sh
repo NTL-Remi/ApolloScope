@@ -6,4 +6,4 @@ echo_blue () { echo -e "\e[34m$1\e[39m"; }
 cd "${0%/*}" # (script name minus the last path component '/*')
 
 # run pytest
-pytest "$@"
+pytest --html=test_report.html --self-contained-html "$@"
