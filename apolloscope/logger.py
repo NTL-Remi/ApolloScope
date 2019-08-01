@@ -110,7 +110,7 @@ class _Indentation:
     def __add__(self, string):
         return str(self) + string
 
-    def up(self):  # pylint: disable=C0103
+    def up(self):  # pylint: disable = invalid-name
         """Add one level to indentation."""
         self.size += 1
 
@@ -119,12 +119,12 @@ class _Indentation:
         self.size -= 1
 
 
-_indentation = _Indentation()  # pylint: disable=C0103
+_indentation = _Indentation()  # pylint: disable = invalid-name
 """Global object defining the log indent level"""
 
 
 def _caller_file_name(rank):
-    frame = sys._getframe(0)  # pylint: disable=W0212
+    frame = sys._getframe(0)  # pylint: disable = protected-access
     for __ in range(rank):
         frame = frame.f_back
     return frame.f_globals['__name__']
@@ -187,7 +187,7 @@ def _make_log_wrapper(log_level, *, default_indent=True):
     return log_wrapper
 
 
-# pylint: disable=C0103
+# pylint: disable = invalid-name
 debug = _make_logger('debug')
 """Log a message with a debug level."""
 

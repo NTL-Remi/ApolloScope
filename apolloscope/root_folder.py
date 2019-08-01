@@ -32,6 +32,6 @@ def _make_path_setter(target):
     return path_setter
 
 
-# pylint: disable=C0103
+# pylint: disable = invalid-name
 scene_parsing = _make_path_setter('scene_parsing')
 lane_segmentation = _make_path_setter('lane_segmentation')

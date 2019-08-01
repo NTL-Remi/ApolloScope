@@ -24,7 +24,7 @@ def date_display(dates):
 
 
 def window_tiling(w_names):
-    # pylint: disable=C0103
+    # pylint: disable = invalid-name
     side = int(sqrt(len(w_names)))
     w_names = w_names.__iter__()
     y = 0

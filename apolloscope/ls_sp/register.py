@@ -104,7 +104,8 @@ class TypeId(NamedTuple):
         A tuple of slices that allows easy slicing of a
         dataframe using the ``loc`` method.
         """
-        return tuple(slice(_id, _id) for _id in self)  # pylint: disable=E1133
+        # pylint: disable = not-an-iterable
+        return tuple(slice(_id, _id) for _id in self)
         # note: not using pandas.IndexSlice because it is not possible
         # to dynamically use the colon for incomplete identifiers.
         # Thus, slice(None, None) is used instead.
@@ -122,7 +123,7 @@ class TypeId(NamedTuple):
         return all(map(lambda x: x is not None, self))
 
     def __str__(self):  # noqa: D105
-        return '{}/{}/{}/{}'.format(*self)  # pylint: disable=E1133
+        return '{}/{}/{}/{}'.format(*self)  # pylint: disable = not-an-iterable
 
 
 class SequenceId(NamedTuple):
@@ -156,7 +157,8 @@ class SequenceId(NamedTuple):
         A tuple of slices that allows easy slicing of a
         dataframe using the ``loc`` method.
         """
-        return tuple(slice(_id, _id) for _id in self)  # pylint: disable=E1133
+        # pylint: disable = not-an-iterable
+        return tuple(slice(_id, _id) for _id in self)
 
     @property
     def is_complete(self):
@@ -171,7 +173,8 @@ class SequenceId(NamedTuple):
         return all(map(lambda x: x is not None, self))
 
     def __str__(self):  # noqa: D105
-        return 'road{}/record{}/camera{}'.format(*self)  # noqa: E501, pylint: disable=E1133
+        # pylint: disable = not-an-iterable
+        return 'road{}/record{}/camera{}'.format(*self)  # noqa: E501
 
 
 class DataSeries(pd.Series):
