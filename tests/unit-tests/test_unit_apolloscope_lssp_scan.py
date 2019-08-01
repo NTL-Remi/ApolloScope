@@ -106,19 +106,22 @@ class TestRegexes(unittest.TestCase):
     def test_ls_file_regex(self, path_and_capture):
         path, capture = path_and_capture
         match = scan.LS_FILE_REGEX.fullmatch(path)
-        self.assertEqual(match.groups(), capture)
+        print(path)
+        print(scan.LS_FILE_REGEX.pattern)
+        print(capture)
+        assert match.groups() == capture
 
     @given(sp_dated_path_and_capture_groups())
     def test_sp_dated_file_regex(self, path_and_capture):
         path, capture = path_and_capture
         match = scan.SP_DATED_FILE_REGEX.fullmatch(path)
-        self.assertEqual(match.groups(), capture)
+        assert match.groups() == capture
 
     @given(sp_pose_path_and_capture_groups())
     def test_sp_pose_file_regex(self, path_and_capture):
         path, capture = path_and_capture
         match = scan.SP_POSE_FILE_REGEX.fullmatch(path)
-        self.assertEqual(match.groups(), capture)
+        assert match.groups() == capture
 
 
 class TestScaners(unittest.TestCase):
@@ -128,8 +131,7 @@ class TestScaners(unittest.TestCase):
         with mock.patch('pathlib.Path.glob', return_value=paths), \
              mock.patch('pathlib.Path.exists', return_value=True):
             dataframe = scan.lane_segmentation('')
-            self.assertListEqual(sorted(paths),
-                                 sorted(dataframe['path']))
+            assert sorted(paths) == sorted(dataframe['path'])
 
     @given(strings_from_regex(scan.SP_DATED_FILE_REGEX),
            strings_from_regex(scan.SP_POSE_FILE_REGEX))
@@ -138,8 +140,7 @@ class TestScaners(unittest.TestCase):
         with mock.patch('pathlib.Path.glob', return_value=paths), \
                 mock.patch('pathlib.Path.exists', return_value=True):
             dataframe = scan.scene_parsing('')
-            self.assertListEqual(sorted(dated_paths),
-                                 sorted(dataframe['path']))
+            assert sorted(dated_paths) == sorted(dataframe['path'])
 
 
 if __name__ == '__main__':

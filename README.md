@@ -4,7 +4,7 @@
 [![Python version][python_version_badge]][python_version_link]
 [![License][license_badge]][license_link]  
 [![Documentation][documentation_badge]][documentation_link]  
-![Pytest][pytest_badge]
+![Build status][build_status_badge]
 ![Coverage][coverage_badge]  
 ![Pylint][pylint_badge]
 
@@ -31,7 +31,8 @@ Currently it is only focused on the overlapping [__Lane segmentation__][lane_seg
 [python_version_badge]: https://badgen.net/badge/Python/3.7?icon=https://simpleicons.now.sh/python/fff&color=blue
 [python_version_link]: https://www.python.org/downloads/release/python-373/
 
-[pytest_badge]: ./docs/source/_static/badges/pytest.svg
+[build_status_badge]: https://travis-ci.org/NTL-Remi/ApolloScope.svg?branch=master
+
 [coverage_badge]: ./docs/source/_static/badges/coverage.svg
 
 [pylint_badge]: ./docs/source/_static/badges/pylint.svg
