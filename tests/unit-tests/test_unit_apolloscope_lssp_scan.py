@@ -18,6 +18,9 @@ NUM_STRING = st.text(alphabet=string.digits, min_size=1)
 ALPHA_STRING = st.text(alphabet=string.ascii_letters, min_size=1)
 """Generate alphabetical strings."""
 
+ALPHA_POINT_STRING = st.text(alphabet=string.ascii_letters + '.', min_size=1)
+"""Generate alphabetical strings."""
+
 EXTENTION_SEPARATOR = st.sampled_from('._')
 """Generate extention separator characters."""
 
@@ -43,7 +46,7 @@ def ls_path_and_capture_groups(draw):
     date = draw(NUM_STRING)
     section = draw(ALPHA_STRING)
     subsection = draw(ALPHA_STRING)
-    file_type = draw(ALPHA_STRING)
+    file_type = draw(ALPHA_POINT_STRING)
     ext_sep = draw(st.sampled_from('._'))
     return (f'root_folder/'
             f'{section}_road{road}/'
@@ -68,7 +71,7 @@ def sp_dated_path_and_capture_groups(draw):
     date = draw(NUM_STRING)
     section = draw(ALPHA_STRING)
     subsection = draw(ALPHA_STRING)
-    file_type = draw(ALPHA_STRING)
+    file_type = draw(ALPHA_POINT_STRING)
     ext_sep = draw(st.sampled_from('._'))
     return (f'root_folder/'
             f'road{road}_{section}/'

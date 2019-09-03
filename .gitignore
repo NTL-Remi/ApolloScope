@@ -3,3 +3,4 @@
 .hypothesis/
 .venv/
 logs/
+venv/

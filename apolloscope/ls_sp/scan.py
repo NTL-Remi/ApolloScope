@@ -32,7 +32,7 @@ SP_DATED_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
     [SP_FOLDER_REGEX,
      r'[0-9]+_(?P<date>[0-9]+)_'
      r'Camera_(?P=camera)[_.]'
-     r'(?P<file_type>\w+?)$']))
+     r'(?P<file_type>[.\w]+?)$']))
 """re.Pattern: Compiled regex for scene parsing dataset regular files."""
 
 SP_POSE_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
@@ -52,7 +52,7 @@ LS_FILE_REGEX = re.compile(REGEX_PATH_SEPARATOR.join(
     [LS_FOLDER_REGEX,
      r'[0-9]+_(?P<date>[0-9]+)_'
      r'Camera_(?P=camera)[_.]'
-     r'(?P<file_type>\w+?)$']))
+     r'(?P<file_type>[.\w]+?)$']))
 """re.Pattern: Compiled regex for lane segmentation dataset files."""
 
 
