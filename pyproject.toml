@@ -5,26 +5,23 @@
 [tool]
 
     [tool.poetry]
+        name = "apolloscope"
+        version = "0.2.0"
+        description = ""
+        authors = ["Trong-Lanh <t-lanh.nguyen@etu.uca.fr>"]
         repository = "https://github.com/NTL-Remi/ApolloScope"
 
-        [tool.poetry]
-            name = "apolloscope"
-            version = "0.1.0"
-            description = ""
-            authors = ["Trong-Lanh <t-lanh.nguyen@etu.uca.fr>"]
-
         [tool.poetry.dependencies]
-            python = "^3.7.1"
-            streamlit = "^0.77.0"
+            python = "^3.9"
+            einops = "^0.3.0"
             loguru = "^0.5.3"
+            matplotlib = "^3.3.4"
             pandas = "^1.2.2"
             Pillow = "^8.1.0"
-            matplotlib = "^3.3.4"
-            einops = "^0.3.0"
-            torch = "^1.8.0"
             rich = "^9.13.0"
+            streamlit = "^0.77.0"
+            torch = "^1.8.0"
 
         [tool.poetry.dev-dependencies]
-            pytest = "^5.2"
             bpython = "^0.21"
-
+            pytest = "^6.2.2"
