@@ -1,6 +1,17 @@
+# python
 *.egg-info/
-*__pycache__/
-.hypothesis/
-.venv/
-logs/
-venv/
+__pycache__/
+
+# environment
+.envrc
+.python-version
+
+# sphinx
+docs/build/
+docs/source/api/
+
+# poetry
+poetry.lock
+
+# misc
+*.sublime-workspace
