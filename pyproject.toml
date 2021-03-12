@@ -1,0 +1,30 @@
+[build-system]
+    requires = ["poetry-core>=1.0.0"]
+    build-backend = "poetry.core.masonry.api"
+
+[tool]
+
+    [tool.poetry]
+        repository = "https://github.com/NTL-Remi/ApolloScope"
+
+        [tool.poetry]
+            name = "apolloscope"
+            version = "0.1.0"
+            description = ""
+            authors = ["Trong-Lanh <t-lanh.nguyen@etu.uca.fr>"]
+
+        [tool.poetry.dependencies]
+            python = "^3.7.1"
+            streamlit = "^0.77.0"
+            loguru = "^0.5.3"
+            pandas = "^1.2.2"
+            Pillow = "^8.1.0"
+            matplotlib = "^3.3.4"
+            einops = "^0.3.0"
+            torch = "^1.8.0"
+            rich = "^9.13.0"
+
+        [tool.poetry.dev-dependencies]
+            pytest = "^5.2"
+            bpython = "^0.21"
+
