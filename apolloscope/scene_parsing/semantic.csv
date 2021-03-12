@@ -1,0 +1,45 @@
+name,id,trainId,category,catId,hasInstances,ignoreInEval,color,description
+
+bicycle,35,18,vehicle,7,True,False,#770B20,
+bicycle_group,163,18,vehicle,7,True,False,#770B20,
+motorbicycle,34,17,vehicle,7,True,False,#0000E6,
+motorbicycle_group,162,17,vehicle,7,True,False,#0000E6,
+tricycle,40,255,vehicle,7,True,False,#8080C0,"Three-wheeled vehicles,motorized, or human-powered"
+tricycle_group,168,255,vehicle,7,True,False,#8080C0,"Three-wheeled vehicles,motorized, or human-powered"
+bus,39,15,vehicle,7,True,False,#003C64,
+bus_group,167,15,vehicle,7,True,False,#003C64,
+truck,38,14,vehicle,7,True,False,#000046,
+truck_group,166,14,vehicle,7,True,False,#000046,
+car,33,13,vehicle,7,True,False,#00008E,
+car_groups,161,13,vehicle,7,True,False,#00008E,
+
+rider,37,12,human,6,True,False,#FF0000,"Person on motorcycle,bicycle or tricycle"
+rider_group,165,12,human,6,True,False,#FF0000,"Person on motorcycle,bicycle or tricycle"
+person,36,11,human,6,True,False,#DC143C,
+person_group,164,11,human,6,True,False,#DC143C,
+
+sky,17,10,sky,5,False,False,#4682B4,
+
+vegetation,113,8,nature,4,False,False,#6B8E23,
+
+traffic_sign,83,7,object,3,False,False,#DCDC00,
+traffic_light,81,6,object,3,False,False,#FAAA1E,
+pole,82,5,object,3,False,False,#999999,
+traffic_cone,65,255,object,3,False,False,#000040,Movable and cone-shaped markers
+road_pile,66,255,object,3,False,False,#0000C0,Fixed with many different shapes
+dustbin,85,255,object,3,False,False,#4000C0,
+billboard,86,255,object,3,False,False,#C000C0,
+
+tunnel,99,255,construction,2,False,True,#96785A,
+bridge,98,255,construction,2,False,True,#966464,
+overpass,100,255,construction,2,False,True,#408040,
+fence,67,4,construction,2,False,False,#BE9999,
+wall,84,3,construction,2,False,False,#66669C,
+building,97,2,construction,2,False,False,#464646,
+
+sidewalk,50,1,flat,1,False,False,#F423E8,
+road,49,0,flat,1,False,False,#804080,
+
+others,0,255,void,0,False,True,#000000,
+rover,1,255,void,0,False,True,#000000,
+unlabeled,255,255,void,0,False,True,#000000,Other unlabeled objects
