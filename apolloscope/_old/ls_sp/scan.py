@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from apolloscope import logger
+from .. import logger
 
 __all__ = ['scene_parsing', 'lane_segmentation']
 

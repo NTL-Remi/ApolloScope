@@ -45,8 +45,7 @@ from typing import NamedTuple, Optional
 
 import pandas as pd
 
-import apolloscope.root_folder
-from apolloscope import logger
+from .. import logger, root_folder
 from . import scan
 
 __all__ = ['TypeId', 'SequenceId', 'DataSeries', 'Register']
@@ -233,8 +232,8 @@ class Register(pd.DataFrame):
         ls_scan = None
         sp_scan = None
 
-        ls_path = apolloscope.root_folder.PATHS['lane_segmentation']
-        sp_path = apolloscope.root_folder.PATHS['scene_parsing']
+        ls_path = root_folder.PATHS['lane_segmentation']
+        sp_path = root_folder.PATHS['scene_parsing']
 
         if ls_path:
             ls_scan = scan.lane_segmentation(ls_path)

@@ -7,7 +7,7 @@ and a setter function for each dataset path.
 from pathlib import Path
 from types import MappingProxyType
 
-from apolloscope import logger
+from . import logger
 
 __all__ = ['PATHS', 'lane_segmentation', 'scene_parsing']
 
