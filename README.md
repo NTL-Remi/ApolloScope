@@ -1,23 +1,19 @@
-# :mag: ApolloScope - ApolloScape dataset loading tool
+# 🔎 ApolloScope - ApolloScape dataset loading tool
 
 [![ApolloScape][apolloscape_badge]][apolloscape_link]
-[![Python version][python_version_badge]][python_version_link]
+[![Python version][python_badge]][python_link]
 [![License][license_badge]][license_link]  
 [![Documentation][documentation_badge]][documentation_link]  
-![Build status][build_status_badge]
-![Coverage][coverage_badge]  
-![Pylint][pylint_badge]
-
 
 **WIP - Version 0**
 
 This is a Python package for visualisation and loading of Baidu's ApolloScape data-set for vehicle vision tasks.
 
-Currently it is only focused on the overlapping [__Lane segmentation__][lane_segmentation] and [__Scene parsing__][scene_parsing] data-sets.
+Currently it is only focused on the [__Scene parsing__][scene_parsing] data-set.
 
-## temporary usage
+## Usage for v0.1.0
 
-Currently this project is still a bit messy. I plan on cleaning it and
+As of v0.1.0, this project is still a bit messy. I plan on cleaning it and
 improving the UI (probably inducing some heavy changes) when I will have some
 time.
 Here is some code if you want to use it in its current state:
@@ -94,11 +90,5 @@ Triplets with missing data would be dropped.
 [license_badge]: https://badgen.net/badge/License/LGPL?color=purple
 [license_link]: https://github.com/NTL-Remi/ApolloScope/blob/master/LICENSE.md
 
-[python_version_badge]: https://badgen.net/badge/Python/3.7?icon=https://simpleicons.now.sh/python/fff&color=blue
-[python_version_link]: https://www.python.org/downloads/release/python-373/
-
-[build_status_badge]: https://travis-ci.org/NTL-Remi/ApolloScope.svg?branch=master
-
-[coverage_badge]: ./docs/source/_static/badges/coverage.svg
-
-[pylint_badge]: ./docs/source/_static/badges/pylint.svg
+[python_badge]: https://badgen.net/badge/Python/3.7?icon=https://simpleicons.now.sh/python/fff&color=blue
+[python_link]: https://www.python.org
