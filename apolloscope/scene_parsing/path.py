@@ -18,7 +18,7 @@ __all__ = ['Register']
 log.disable('apolloscope')
 
 CACHE_DIR = Path(appdirs.user_cache_dir('apolloscope'))
-
+CACHE_FILE = CACHE_DIR / 'register.csv'
 
 # Regular expressions
 # ===================
@@ -194,37 +194,47 @@ class Register:
     Provides easy access to data by types and sequence.
     """
 
-    def __init__(self):
-        self.dataframe = None
+    def __init__(self, *, root, use_cache_index=False):
+        if use_cache_index:
+            try:
+                self.dataframe = Register._df_from_cache()
+                return
+            except FileNotFoundError as err:
+                log.warning(f'Failed loading path register from cache:\n'
+                            f'{err}')
+
+        self.dataframe = Register._df_from_file_system(root)
+
+        if use_cache_index:
+            self._df_to_cache()
 
     @staticmethod
-    def from_file_system(path):
-        log.info('Building path register from file system')
+    def _df_from_file_system(root):
+        log.info('Building path register dataframe from file system')
 
-        path = Path(path).expanduser()
-        if not path.exists():
-            log.error(f'Scene Parsing path not found: {path}')
-            raise FileNotFoundError(f'Scene Parsing path not found: {path}')
-
-        register = Register.__new__(Register)
+        root = Path(root).expanduser()
+        if not root.exists():
+            log.error(f'Scene Parsing path not found: {root}')
+            raise FileNotFoundError(f'Scene Parsing path not found: {root}')
 
         # extraction
         # ==========
 
-        # get all file paths in a series
-        file_paths_series = pd.Series(map(str, path.glob('**/*.*')),
+        # get all file paths in a series as strings
+        file_paths_series = pd.Series(map(str, root.glob('**/*.*')),
                                       name='path')
         log.info(f'found {file_paths_series.size} files')
 
         # extract index for non-pose files
-        register.dataframe = file_paths_series.str.extract(REGEX_FILE_DATED)
+        dataframe = file_paths_series.str.extract(REGEX_FILE_DATED)
         # add full paths as a new column
-        register.dataframe = pd.concat(
-            [register.dataframe, file_paths_series], axis=1, join='inner')
+        dataframe = pd.concat([dataframe, file_paths_series],
+                              axis=1,
+                              join='inner')
         # remove bad maches (non dated files)
-        register.dataframe = register.dataframe.dropna()
+        dataframe = dataframe.dropna()
 
-        log.info(f'matched {len(register.dataframe.index)} time-stamps')
+        log.info(f'matched {len(dataframe.index)} time-stamps')
 
         # TODO: Pose processing to fit in the df
         # something like: dataframe['pose'] = pose_file_parsing(smth)
@@ -235,42 +245,35 @@ class Register:
         log.info('building Register')
 
         # convert future row index to int
-        register.dataframe[_INDEX_NAMES] = (register.dataframe[_INDEX_NAMES]
-                                            .astype('int'))
+        dataframe[_INDEX_NAMES] = (dataframe[_INDEX_NAMES].astype('int'))
         # use columns as indices, the only left should be 'path'
-        register.dataframe.set_index(
-            _INDEX_NAMES + _COLUMN_NAMES, inplace=True)
+        dataframe.set_index(_INDEX_NAMES + _COLUMN_NAMES, inplace=True)
         # move indices from row to column to fit dataframe
-        register.dataframe = register.dataframe.unstack(
-            _COLUMN_NAMES, fill_value=None)
+        dataframe = dataframe.unstack(_COLUMN_NAMES, fill_value=None)
         # drop the unnamed column level created by the 'path' column
-        register.dataframe.columns = register.dataframe.columns.droplevel(None)
+        dataframe.columns = dataframe.columns.droplevel(None)
 
         # sorting indices, errors can arise if not done
-        register.dataframe.sort_index(axis=1, inplace=True)
+        dataframe.sort_index(axis=1, inplace=True)
         # replacing np.nan by None
-        register.dataframe = register.dataframe.where(
-            pd.notnull(register.dataframe), None)
+        dataframe = dataframe.where(pd.notnull(dataframe), None)
 
-        return register
+        return dataframe
 
     @staticmethod
-    def from_cache():
-        log.info('Loading path register from cache')
-
-        register = Register.__new__(Register)
-
-        register.dataframe = pd.read_csv(
-            CACHE_DIR / 'register.csv',
+    def _df_from_cache():
+        log.info('Loading path register dataframe from cache')
+        dataframe = pd.read_csv(
+            CACHE_FILE,
             header=list(range(len(_COLUMN_NAMES))),
             index_col=list(range(len(_INDEX_NAMES))),
             dtype='object')
 
-        return register
+        return dataframe
 
-    def to_cache(self):
-        log.info('Saving path register to cache')
-        self.dataframe.to_csv(CACHE_DIR / 'register.csv')
+    def _df_to_cache(self):
+        log.info('Saving path register dataframe to cache')
+        self.dataframe.to_csv(CACHE_FILE)
 
     def type_slice(self, type_):
         assert isinstance(type_, Type) or type_ is None

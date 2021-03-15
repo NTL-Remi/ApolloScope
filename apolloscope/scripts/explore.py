@@ -14,22 +14,11 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 @streamlit.cache
-def get_register(use_disk_cache=True):
+def get_register(use_cache_index=True):
     with streamlit.spinner('loading register'):
-        if use_disk_cache:
-            try:
-                register = scene_parsing.path.Register.from_cache()
-                return register
-            except FileNotFoundError:
-                pass
-
-        register = scene_parsing.path.Register.from_file_system(
-            '~/Data/apolloscape/Scene_Parsing/extracted')
-
-        if use_disk_cache:
-            register.to_cache()
-
-    return register
+        return scene_parsing.path.Register(
+            root='~/Data/apolloscape/Scene_Parsing/extracted',
+            use_cache_index=use_cache_index)
 
 
 def load_visualization_from_path(type_, path):
@@ -46,10 +35,10 @@ def load_visualization_from_path(type_, path):
     return image
 
 
-use_disk_cache = streamlit.checkbox(label="Use disk cache for path register",
-                                    value=True)
+use_cache_index = streamlit.checkbox(label="Use disk cache for path register",
+                                     value=True)
 
-register = get_register(use_disk_cache)
+register = get_register(use_cache_index)
 
 streamlit_columns_selectors = streamlit.beta_columns(2)
 
