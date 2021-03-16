@@ -47,13 +47,16 @@ type_selection = type_selector.multiselect(
     label='type filter',
     options=register.type_list)
 
+if type_selection:
+    register = register.types(type_selection)
+
 sequence_selector = streamlit_columns_selectors[1].empty()
 sequence_selection = sequence_selector.multiselect(
     label='sequence filter',
     options=register.sequence_list)
 
-if type_selection:
-    register = register.types(type_selection)
+if sequence_selection:
+    register = register.sequences(sequence_selection)
 
 if len(register.dataframe) == 0:
     streamlit.warning("types and sequences do not intersect.")
