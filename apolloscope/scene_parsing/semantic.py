@@ -88,7 +88,10 @@ Fields              Descriptions
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from einops import repeat
+from PIL import Image
 from PIL.ImageColor import getrgb
 
 LABEL_TABLE = pd.read_csv(
@@ -126,3 +129,22 @@ def mapping(from_: str, to: str):
         'road'
     """
     return LABEL_TABLE.set_index(from_)[to].to_dict()
+
+
+def load(path):
+    array = np.array(Image.open(path), dtype=np.uint8)
+
+    return array
+
+
+def colorize(array, from_='trainId'):
+    # create 3-channel output array
+    color_array = repeat(np.empty_like(array, dtype=np.uint8),
+                         '... h w -> ... h w c', c=3)
+
+    # fill color by color
+    color_map = mapping(from_, to='color')
+    for id_ in np.unique(array):
+        color_array[array == id_] = np.uint8(color_map[id_])
+
+    return Image.fromarray(color_array)
