@@ -1,70 +1,37 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from einops import repeat
 from loguru import logger as log
 from PIL import Image
 
-from . import semantic
+from . import depth, instance, semantic
 
 log.disable('apolloscope')
 
 
-def colorize_depth(array, clip=200):
-    # rescale values to metric units
-    # see apolloscape.auto/scene.html#to_structure_href
-    array = np.array(array, dtype=float) / 200
-    array = array.clip(0, clip)  # clip at 200 meters
-    array /= clip  # rescale to [0-1]
-
-    color_array = plt.get_cmap('turbo_r')(array)  # colorize
-    color_array = color_array[:, :, :3]  # remove alpha
-    color_array = np.uint8(color_array * 255)  # to [0-255]
-
-    return Image.fromarray(color_array)
+def _depth_loader(path, *, clip=None):
+    return depth.colorize(depth.load(path), clip=clip)
 
 
-def colorize_semantic(array):
-    array = np.array(array, dtype=np.uint8)
-    # create 3-channel output array
-    color_array = repeat(np.empty_like(array),
-                         'h w -> h w c', c=3)
-
-    # fill color by color
-    color_map = semantic.mapping('id', to='color')
-    for id_ in np.unique(array):
-        color_array[array == id_] = np.uint8(color_map[id_])
-
-    return Image.fromarray(color_array)
+def _semantic_loader(path, *, id_type='id'):
+    # TODO: id remapping
+    return semantic.colorize(semantic.load(path))
 
 
-def colorize_instances(array):
-    array = np.array(array, dtype=np.uint8)
-
-    remapped_array = np.empty_like(array)
-    for i, id_ in enumerate(np.unique(array)):
-        remapped_array[array == id_] = i
-
-    color_array = plt.get_cmap('tab20')(remapped_array)  # colorize
-    color_array[array == 255] = 0  # set black where empty
-    color_array = color_array[:, :, :3]  # remove alpha
-    color_array = np.uint8(color_array * 255)  # to [0-255]
-
-    return Image.fromarray(color_array)
+def _instance_loader(path):
+    return instance.colorize(instance.load(path))
 
 
-COLORIZE_TYPE_FUCTION = {
-    ('ins', 'ColorImage', 'jpg'): lambda array: array,
-    ('seg', 'ColorImage', 'jpg'): lambda array: array,
+VISUALIZATION_LOADER = {
+    ('ins', 'ColorImage', 'jpg'): Image.open,
+    ('seg', 'ColorImage', 'jpg'): Image.open,
 
-    ('ins', 'Depth', 'png'): colorize_depth,
-    ('ins_depth', 'Depth', 'png'): colorize_depth,
-    ('seg_depth', 'Depth', 'png'): colorize_depth,
+    ('ins', 'Depth', 'png'): _depth_loader,
+    ('ins_depth', 'Depth', 'png'): _depth_loader,
+    ('seg_depth', 'Depth', 'png'): _depth_loader,
 
-    ('ins', 'Label', 'png'): colorize_semantic,
-    ('ins', 'Label', 'bin.png'): colorize_semantic,
-    ('seg', 'Label', 'bin.png'): colorize_semantic,
+    ('ins', 'Label', 'png'): _semantic_loader,
+    ('ins', 'Label', 'bin.png'): _semantic_loader,
+    ('seg', 'Label', 'bin.png'): _semantic_loader,
 
-    ('ins', 'Label', 'instanceIds.png'): colorize_instances}
+    ('ins', 'Label', 'instanceIds.png'): _instance_loader}
 
 
 class VisualizationError(Exception):
@@ -75,42 +42,34 @@ class DataTypeError(VisualizationError):
     """Error related to the type of visualization."""
 
 
-def get_from_path(type_, path, *, resize=None, ratio=None):
-    log.debug(f'Building {type_} visualization for {path}')
+class LoaderError(VisualizationError):
+    """Error related to image loaders."""
+
+
+def load(type_, path, *, max_dim=None, depth_clip=None):
+    log.debug(f'Building {type_} visualization for \'{path}\'')
+
     try:
-        colorization_function = COLORIZE_TYPE_FUCTION[type_]
+        loader = VISUALIZATION_LOADER[type_]
     except KeyError as error:
-        raise DataTypeError(
-            f'Unsuported type {type_}, can not load visualization') \
-            from error
+        if type_ not in VISUALIZATION_LOADER.keys():
+            raise DataTypeError(
+                f'Unsuported type {type_}, can\'t load visualization') \
+                from error
+        raise
 
-    image = Image.open(path)
-    image = colorization_function(image)
+    if loader is Image.open:
+        image = loader(path)
+    elif loader is _depth_loader:
+        image = loader(path, clip=depth_clip)
+    elif loader is _semantic_loader:
+        image = loader(path)
+    elif loader is _instance_loader:
+        image = loader(path)
+    else:
+        raise LoaderError(f'Unknown image loader {loader}')
 
-    if ratio is not None:
-        resize = (int(image.size[0] * ratio),
-                  int(image.size[1] * ratio))
-    if resize is not None:
-        image = image.resize(resize)
-
-    return image
-
-
-def get_from_array(type_, array, *, resize=None, ratio=None):
-    log.debug(f'Building {type_} visualization for {array}')
-    try:
-        colorization_function = COLORIZE_TYPE_FUCTION[type_]
-    except KeyError as error:
-        raise DataTypeError(
-            f'Unsuported type {type_}, can not load visualization') \
-            from error
-
-    image = colorization_function(array)
-
-    if ratio is not None:
-        resize = (int(image.size[0] * ratio),
-                  int(image.size[1] * ratio))
-    if resize is not None:
-        image = image.resize(resize)
+    if max_dim:
+        image.thumbnail((max_dim, max_dim), resample=Image.NEAREST)
 
     return image
