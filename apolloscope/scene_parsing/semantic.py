@@ -132,12 +132,17 @@ def mapping(from_: str, to: str):
 
 
 def load(path):
-    array = np.array(Image.open(path), dtype=np.uint8)
-
-    return array
+    return np.array(Image.open(path), dtype=np.uint8)
 
 
-def colorize(array, from_='trainId'):
+def remap(array, *, from_, to_):
+    mapped_array = np.empty_like(array)
+    for from_value, to_value in mapping(from_, to_).items():
+        mapped_array[array == from_value] = to_value
+    return mapped_array
+
+
+def colorize(array, from_='id'):
     # create 3-channel output array
     color_array = repeat(np.empty_like(array, dtype=np.uint8),
                          '... h w -> ... h w c', c=3)

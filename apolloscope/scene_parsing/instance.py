@@ -4,9 +4,7 @@ from PIL import Image
 
 
 def load(path):
-    array = np.array(Image.open(path), dtype=np.uint8)
-
-    return array
+    return np.array(Image.open(path), dtype=np.uint8)
 
 
 def colorize(array):
