@@ -15,7 +15,9 @@ def load(path):
 
 def colorize(array, clip=None):
     array = array.clip(0, clip)
-    array /= clip  # rescale to [0-1]
+
+    # rescale to [0-1]
+    array /= clip or 327.68  # 327.68 = 2**16 / 200
 
     color_array = plt.get_cmap('turbo_r')(array)  # colorize
     color_array = color_array[:, :, :3]  # remove alpha
