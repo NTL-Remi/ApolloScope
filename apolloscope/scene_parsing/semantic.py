@@ -128,7 +128,7 @@ def mapping(from_: str, to: str):
         >>> mapping('trainId', to='name')[0]
         'road'
     """
-    return LABEL_TABLE.set_index(from_)[to].to_dict()
+    return LABEL_TABLE.set_index(from_, drop=False)[to].to_dict()
 
 
 def load(path):
