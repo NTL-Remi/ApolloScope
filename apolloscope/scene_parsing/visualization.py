@@ -11,8 +11,9 @@ def _depth_loader(path, *, clip=None):
 
 
 def _semantic_loader(path, *, id_type='id'):
-    # TODO: id remapping
-    return semantic.colorize(semantic.load(path))
+    return semantic.colorize(semantic.remap(semantic.load(path),
+                                            from_='id', to_=id_type),
+                             from_=id_type)
 
 
 def _instance_loader(path):
