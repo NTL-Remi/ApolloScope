@@ -6,10 +6,11 @@ from rich.logging import RichHandler
 
 log.enable('apolloscope')
 log.configure(handlers=[{"sink": RichHandler(markup=True),
-                         "format": "[red]{function}[/red] {message}"}])
+                         "format": "{message}"}])
 
 st.set_page_config(page_title='Explore Apolloscape',
                    layout="wide")
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
