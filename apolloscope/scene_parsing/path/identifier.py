@@ -70,6 +70,23 @@ class Type(NamedTuple):
         """Bool: Define wether the identifier is completely defined."""
         return all(map(lambda x: x is not None, self))
 
+    @property
+    def COL(self):
+        return [Type(subsection='ColorImage', file_type='jpg')]
+
+    @property
+    def DEP(self):
+        return [Type(subsection='Depth', file_type='png')]
+
+    @property
+    def INS(self):
+        return [Type(subsection='Label', file_type='instanceIds.png')]
+
+    @property
+    def SEM(self):
+        return [Type(subsection='Label', file_type='bin.png'),
+                Type(subsection='Label', file_type='png')]
+
     def __str__(self):  # noqa: D105
         return '{}/{}/{}'.format(*self)  # pylint: disable = not-an-iterable
 
