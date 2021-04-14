@@ -71,6 +71,19 @@ class Type(NamedTuple):
         return all(map(lambda x: x is not None, self))
 
     @property
+    def category(self):
+        # TODO: Use enum
+        if self.subsection == 'ColorImage' and self.file_type == 'jpg':
+            return 'color'
+        if self.subsection == 'Depth' and self.file_type == 'png':
+            return 'depth'
+        if self.subsection == 'Label' and self.file_type == 'instanceIds.png':
+            return 'instance'
+        if self.subsection == 'Label' and self.file_type in ('png', 'bin.png'):
+            return 'semantic'
+        raise ValueError(f'Unkown type {self}.')
+
+    @property
     def COL(self):
         return [Type(subsection='ColorImage', file_type='jpg')]
 

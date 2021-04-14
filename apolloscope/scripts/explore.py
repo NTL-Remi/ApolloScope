@@ -86,8 +86,6 @@ for (*sequence, timestamp), paths in register.at_time(time).iterrows():
     paths = paths.dropna()
     st_columns = st.beta_columns(len(paths))
     for st_column, (type_, path) in zip(st_columns, paths.iteritems()):
-        type_ = scene_parsing.path.Type(*type_)
-
         with st_column:
             try:
                 image = (scene_parsing.visualization
