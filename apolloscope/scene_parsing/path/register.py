@@ -47,8 +47,7 @@ class Register:
 
         self.dataframe = Register._df_from_file_system(root)
 
-        if use_cache_index:
-            self._df_to_cache()
+        self._df_to_cache()
 
     @staticmethod
     def _df_from_file_system(root):
