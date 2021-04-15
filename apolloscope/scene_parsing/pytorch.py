@@ -2,10 +2,10 @@ from functools import partial
 
 import numpy as np
 import torch
-import torchvision.transforms
 from einops import rearrange
 from loguru import logger as log
 from PIL import Image
+from torchvision.transforms import Compose, InterpolationMode, Resize, ToTensor
 
 from . import semantic
 from .path import Register, Type
@@ -14,13 +14,13 @@ log.disable('apolloscope')
 
 
 class Dataset(torch.utils.data.Dataset):
-    _COL_BASE_TRANSFORM = torchvision.transforms.Compose([
-        torchvision.transforms.Resize([128, 256], interpolation=2),
+    _COL_BASE_TRANSFORM = Compose([
+        Resize([128, 256], interpolation=InterpolationMode.BILINEAR),
         # convert to tensor
-        torchvision.transforms.ToTensor()])
+        ToTensor()])
 
-    _DEP_BASE_TRANSFORM = torchvision.transforms.Compose([
-        torchvision.transforms.Resize([128, 256], interpolation=2),
+    _DEP_BASE_TRANSFORM = Compose([
+        Resize([128, 256], interpolation=InterpolationMode.BILINEAR),
         # convert to tensor
         # Ideally, would be transforms.ToTensor,
         # but in current version it rescales indices TO RANGE [0,1],
@@ -34,8 +34,8 @@ class Dataset(torch.utils.data.Dataset):
 
     _INS_BASE_TRANSFORM = None  # TODO: implement _INS_BASE_TRANSFORM
 
-    _SEM_BASE_TRANSFORM = torchvision.transforms.Compose([
-        torchvision.transforms.Resize([128, 256], interpolation=0),
+    _SEM_BASE_TRANSFORM = Compose([
+        Resize([128, 256], interpolation=InterpolationMode.NEAREST),
         # convert from class ids to training ids
         partial(semantic.remap, from_='id', to_='trainId'),
         # convert to tensor
