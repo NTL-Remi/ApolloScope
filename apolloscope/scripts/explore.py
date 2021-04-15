@@ -18,7 +18,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 def get_register(use_cache_index=True):
     with st.spinner('loading register'):
         return scene_parsing.path.Register(
-            root='~/Data/apolloscape/Scene_Parsing/extracted',
+            root='~/Data/apolloscape/Scene_Parsing',
             use_cache_index=use_cache_index)
 
 
@@ -92,7 +92,7 @@ for (*sequence, timestamp), paths in register.at_time(time).iterrows():
                          .load(type_, path,
                                max_dim=max_dim,
                                depth_clip=clip_depth_value))
-            except scene_parsing.visualization.DataTypeError as error:
+            except ValueError as error:
                 st.error(error)
             else:
                 st.image(image, caption=f'{sequence}\t{type_}')
