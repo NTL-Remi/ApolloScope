@@ -82,7 +82,7 @@ if clip_depth:
 
 
 for (*sequence, timestamp), paths in register.at_time(time).iterrows():
-    sequence = scene_parsing.path.Sequence(*sequence)
+    sequence = scene_parsing.datatype.identifier.Sequence(*sequence)
     paths = paths.dropna()
     st_columns = st.beta_columns(len(paths))
     for st_column, (type_, path) in zip(st_columns, paths.iteritems()):

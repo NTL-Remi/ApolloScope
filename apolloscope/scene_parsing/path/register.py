@@ -9,8 +9,8 @@ import appdirs
 import pandas as pd
 from loguru import logger as log
 
-from .identifier import Sequence, Type
-from .regex import FILE_DATED
+from ...scene_parsing.datatype.identifier import Sequence, Type
+from ...scene_parsing.path.regex import FILE_DATED
 
 log.disable('apolloscope')
 

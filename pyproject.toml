@@ -12,15 +12,16 @@
         repository = "https://github.com/NTL-Remi/ApolloScope"
 
         [tool.poetry.dependencies]
-            python = "^3.9"
             einops = "^0.3.0"
             loguru = "^0.5.3"
             matplotlib = "^3.3.4"
             pandas = "^1.2.2"
             Pillow = "^8.1.0"
+            python = "^3.9"
             rich = "^9.13.0"
             streamlit = "^0.77.0"
             torch = "^1.8.0"
+            torchvision = "^0.9.1"
 
         [tool.poetry.dev-dependencies]
             bpython = "^0.21"
