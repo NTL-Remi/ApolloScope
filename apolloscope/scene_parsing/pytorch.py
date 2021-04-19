@@ -76,7 +76,7 @@ class Dataset(torch.utils.data.Dataset):
         return images
 
     def __len__(self):
-        return len(self.register)
+        return len(self.register.dataframe)
 
     @staticmethod
     def _format_types(types):
