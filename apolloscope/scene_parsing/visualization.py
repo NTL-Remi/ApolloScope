@@ -3,8 +3,8 @@ from functools import partial
 from loguru import logger as log
 from PIL import Image
 
-from . import depth, instance, semantic
-from .path import Type
+from ..scene_parsing.datatype import depth, instance, semantic
+from ..scene_parsing.datatype.identifier import Type
 
 log.disable('apolloscope')
 
