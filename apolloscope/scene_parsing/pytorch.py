@@ -7,8 +7,10 @@ from loguru import logger as log
 from PIL import Image
 from torchvision.transforms import Compose, InterpolationMode, Resize, ToTensor
 
-from . import semantic
-from .path import Register, Type
+from ..scene_parsing.datatype import semantic
+from ..scene_parsing.datatype.identifier import (COLOR, DEPTH, INSTANCE,
+                                                 SEMANTIC, Type)
+from ..scene_parsing.path import Register
 
 log.disable('apolloscope')
 
