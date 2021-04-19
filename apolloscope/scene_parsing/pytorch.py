@@ -16,12 +16,12 @@ log.disable('apolloscope')
 
 
 class Dataset(torch.utils.data.Dataset):
-    _COL_BASE_TRANSFORM = Compose([
+    _COLOR_BASE_TRANSFORM = Compose([
         Resize([128, 256], interpolation=InterpolationMode.BILINEAR),
         # convert to tensor
         ToTensor()])
 
-    _DEP_BASE_TRANSFORM = Compose([
+    _DEPTH_BASE_TRANSFORM = Compose([
         Resize([128, 256], interpolation=InterpolationMode.BILINEAR),
         # convert to tensor
         # Ideally, would be transforms.ToTensor,
@@ -34,9 +34,9 @@ class Dataset(torch.utils.data.Dataset):
         lambda x: x / 200,
         partial(rearrange, pattern='h w -> () h w')])
 
-    _INS_BASE_TRANSFORM = None  # TODO: implement _INS_BASE_TRANSFORM
+    _INSTANCE_BASE_TRANSFORM = None  # TODO: implement _INSTANCE_BASE_TRANSFORM
 
-    _SEM_BASE_TRANSFORM = Compose([
+    _SEMANTIC_BASE_TRANSFORM = Compose([
         Resize([128, 256], interpolation=InterpolationMode.NEAREST),
         # convert from class ids to training ids
         partial(semantic.remap, from_='id', to_='trainId'),
@@ -68,7 +68,7 @@ class Dataset(torch.utils.data.Dataset):
         self.register = self.register.types(types)
 
     def __getitem__(self, index):
-        paths_series = self.register.iloc[index]
+        paths_series = self.register.dataframe.iloc[index]
         images = [Image.open(path) for __, path in paths_series.iteritems()]
         images = self.base_transforms(*images)
         if self.transforms:
@@ -80,8 +80,10 @@ class Dataset(torch.utils.data.Dataset):
 
     @staticmethod
     def _format_types(types):
-        common_types_map = {'col': Type.COL, 'dep': Type.DEP,
-                            'ins': Type.INS, 'sem': Type.SEM}
+        common_types_map = {'color': COLOR,
+                            'depth': DEPTH,
+                            'instance': INSTANCE,
+                            'semantic': SEMANTIC}
         formated_types = []
         for type_ in types:
             try:
@@ -92,8 +94,8 @@ class Dataset(torch.utils.data.Dataset):
 
     @staticmethod
     def _get_base_transforms(types):
-        map_ = {'color': Dataset._COL_BASE_TRANSFORM,
-                'depth': Dataset._DEP_BASE_TRANSFORM,
-                'instance': Dataset._INS_BASE_TRANSFORM,
-                'semantic': Dataset._SEM_BASE_TRANSFORM}
+        map_ = {'color': Dataset._COLOR_BASE_TRANSFORM,
+                'depth': Dataset._DEPTH_BASE_TRANSFORM,
+                'instance': Dataset._INSTANCE_BASE_TRANSFORM,
+                'semantic': Dataset._SEMANTIC_BASE_TRANSFORM}
         return [map_[type_.category] for type_ in types]
