@@ -83,23 +83,6 @@ class Type(NamedTuple):
             return 'semantic'
         raise ValueError(f'Unkown type {self}.')
 
-    @property
-    def COL(self):
-        return [Type(subsection='ColorImage', file_type='jpg')]
-
-    @property
-    def DEP(self):
-        return [Type(subsection='Depth', file_type='png')]
-
-    @property
-    def INS(self):
-        return [Type(subsection='Label', file_type='instanceIds.png')]
-
-    @property
-    def SEM(self):
-        return [Type(subsection='Label', file_type='bin.png'),
-                Type(subsection='Label', file_type='png')]
-
     def __str__(self):  # noqa: D105
         return '{}/{}/{}'.format(*self)  # pylint: disable = not-an-iterable
 
@@ -149,3 +132,11 @@ class Sequence(NamedTuple):
     def __str__(self):  # noqa: D105
         # pylint: disable = not-an-iterable
         return 'road{}/record{}/camera{}'.format(*self)  # noqa: E501
+
+
+# gloabal type shortcuts
+COLOR = [Type(subsection='ColorImage', file_type='jpg')]
+DEPTH = [Type(subsection='Depth', file_type='png')]
+INSTANCE = [Type(subsection='Label', file_type='instanceIds.png')]
+SEMANTIC = [Type(subsection='Label', file_type='bin.png'),
+            Type(subsection='Label', file_type='png')]
