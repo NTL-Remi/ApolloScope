@@ -4,6 +4,10 @@ from loguru import logger as log
 from PIL import ImageFile
 from rich.logging import RichHandler
 
+if __name__ != '__main__':
+    import sys
+    sys.exit()
+
 log.enable('apolloscope')
 log.configure(handlers=[{"sink": RichHandler(markup=True),
                          "format": "{message}"}])
