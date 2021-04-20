@@ -5,6 +5,7 @@ Welcome to Apolloscope's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   datatypes
    api
 
 
