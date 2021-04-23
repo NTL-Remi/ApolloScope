@@ -25,6 +25,8 @@
 
         [tool.poetry.dev-dependencies]
             bpython = "^0.21"
+            jupyterlab = "^3.0.14"
+            jupytext = "^1.11.1"
             pytest = "^6.2.2"
             Sphinx = "^3.5.4"
             sphinx-rtd-theme = "^0.5.2"

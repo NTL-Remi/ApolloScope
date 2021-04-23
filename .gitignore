@@ -13,5 +13,9 @@ docs/source/api/
 # poetry
 poetry.lock
 
+# jupyter
+*.ipynb
+*.ipynb_checkpoints/
+
 # misc
 *.sublime-workspace
