@@ -2,241 +2,329 @@ from __future__ import annotations
 
 import operator
 from copy import deepcopy
-from functools import reduce
-from typing import List, Mapping, Optional, Set
+from functools import cached_property, reduce
+from typing import Hashable, List, Mapping, Optional, Set
 
 
-class Type:
-    """Apolloscape datatype representation."""
+class Identifier:
+    """Apolloscape identifier representation.
 
-    Section = Optional[str]
-    Subsection = Optional[str]
-    FileFormat = Optional[str]
+    A fully defined identifier is composed of 3 hierarchical fields
+    ``Rank_1``, ``Rank_2`` and ``Rank_3``.
 
-    FileFormatSet = Set[FileFormat]
-    SubsectionTree = Mapping[Subsection, FileFormatSet]
-    SectionTree = Mapping[Section, SubsectionTree]
+    All fields are optional,
+    enabling to define incomplete identifiers
+    to select data more broadly.
+
+    Exemples:
+        >>> Identifier(1, 2, 3)
+        Identifier(1, 2, 3)
+        >>> Identifier(rank_2=2)
+        Identifier(None, 2, None)
+
+    Using incomplete ids will catch every values for unspecified fields.
+    To get a finer control over which data is selected,
+    identifiers can be composed.
+    Composing such 'fundamental ids' results in a 'composite ids'.
+
+    Examples:
+        >>> (Identifier('ins', 'Label', 'bin.png')
+        ...  + Identifier('ins', 'Depth', 'png'))
+        Identifier(ins, Depth, png) | Identifier(ins, Label, bin.png)
+    """
+
+    Rank_1 = Optional[Hashable]
+    Rank_2 = Optional[Hashable]
+    Rank_3 = Optional[Hashable]
+
+    Rank3Set = Set[Rank_3]
+    Rank2Map = Mapping[Rank_2, Rank3Set]
+    Rank1Map = Mapping[Rank_1, Rank2Map]
 
     def __init__(self,
-                 section: Section = None,
-                 subsection: Subsection = None,
-                 file_format: FileFormat = None):
+                 rank_1: Rank_1 = None,
+                 rank_2: Rank_2 = None,
+                 rank_3: Rank_3 = None):
 
-        self._section_tree: Type.SectionTree = {section:
-                                                {subsection:
-                                                 {file_format}}}
+        self._rank_1_map: Identifier.Rank1Map = {rank_1:
+                                                 {rank_2:
+                                                  {rank_3}}}
 
-    @property
-    def subtypes(self) -> Set[Type]:
-        """Return the set of composing elementary types.
+    @cached_property
+    def components(self) -> Set[Identifier]:
+        """Return the set of composing fundamental ids.
 
         Exemples:
             TODO
         """
-        return set(self._sorted_subtypes())
+        return set(self._sorted_components)
 
-    @property
+    @cached_property
     def is_composite(self) -> bool:
-        """Is True if the datatype includes multiple component subtypes.
+        """Is True if the identifier has multiple fundamental component ids.
 
         Examples:
-            TODO: true names
-            >>> simple_type = Type('1', '2', '3')
-            >>> simple_type.is_composite
+            >>> simple_id = Identifier(1, 2, 3)
+            >>> simple_id.is_composite
             False
-            >>> composite_type = Type('1', '2', '3') | Type('11', '12', '13')
-            >>> composite_type.is_composite
+            >>> composite_id = Identifier(1, 2, 3) | Identifier(11, 12, 13)
+            >>> composite_id.is_composite
             True
         """
-        return len(self.subtypes) > 1
+        return len(self.components) > 1
 
-    @property
+    @cached_property
     def is_definite(self) -> bool:
-        """Is True if the datatype does not have catch-all fields.
+        """Is True if the identifier does not have catch-all fields.
 
         Examples:
-            TODO: true names
-            >>> definite_type = Type('1', '2', '3')
-            >>> definite_type.is_definite
+            >>> definite_id = Identifier(1, 2, 3)
+            >>> definite_id.is_definite
             True
-            >>> undefinite_type = Type('1', 'None', '3')
-            >>> undefinite_type.is_definite
+            >>> undefinite_id = Identifier(1, None, 3)
+            >>> undefinite_id.is_definite
             False
         """
         try:
-            return (self.section is not None
-                    and self.subsection is not None
-                    and self.file_format is not None)
+            return (self._rank_1 is not None
+                    and self._rank_2 is not None
+                    and self._rank_3 is not None)
         except self.CompositeError:
-            return any(subtype.is_composite for subtype in self.subtypes)
+            return all(component.is_definite for component in self.components)
 
     @property
-    def section(self) -> Section:
-        """Return the Type section if it is not composite.
+    def _rank_1(self) -> Rank_1:
+        """Return the Identifier rank_1 if it is not composite.
 
         Raise:
-            Type.CompositeError: The Type has more than one section.
+            Identifier.CompositeError: The Identifier has more than one rank_1.
 
         Exemples:
-            TODO: true names
-            >>> simple_type = Type('1', '2', '3')
-            >>> simple_type.section
+            >>> simple_id = Identifier(1, 2, 3)
+            >>> simple_id._rank_1
             1
-            >>> composite_type = Type('1', '2', '3') | Type('11', '12', '13')
-            >>> composite_type.section
+            >>> composite_id = Identifier(1, 2, 3) | Identifier(11, 12, 13)
+            >>> composite_id._rank_1
             Traceback (most recent call last):
-            CompositeError: Type.section is undefined
+            CompositeError: Identifier._rank_1 is undefined
         """
         try:
-            if len(self._section_tree) > 1:
-                raise self.CompositeError('Type has multiple sections')
+            if len(self._rank_1_map) > 1:
+                raise self.CompositeError(
+                    'Identifier has multiple rank 1 values')
         except self.CompositeError as err:
-            raise self.CompositeError('Type.section is undefined') from err
-        return list(self._section_tree.keys())[0]
+            raise self.CompositeError(
+                'Identifier.rank_1 is undefined') from err
+        return list(self._rank_1_map.keys())[0]
 
     @property
-    def subsection(self) -> Subsection:
-        """Return the Type subsection if it is not composite.
+    def _rank_2(self) -> Rank_2:
+        """Return the Identifier rank_2 if it is not composite.
 
         Raise:
-            Type.CompositeError: The Type has more than one section
-                or more than one subsection.
+            Identifier.CompositeError: The Identifier has more than one rank_1
+                or more than one rank_2.
 
         Exemples:
             TODO
         """
         try:
-            subsection_tree = self._section_tree[self.section]
+            subsection_tree = self._rank_1_map[self._rank_1]
             if len(subsection_tree) > 1:
-                raise self.CompositeError('Type has multiple subsections')
+                raise self.CompositeError(
+                    'Identifier has multiple rank 2 values')
         except self.CompositeError as err:
-            raise self.CompositeError('Type.subsection is undefined') from err
+            raise self.CompositeError(
+                'Identifier.rank_2 is undefined') from err
         return list(subsection_tree.keys())[0]
 
     @property
-    def file_format(self) -> FileFormat:
-        """Return the Type file format if it is not composite.
+    def _rank_3(self) -> Rank_3:
+        """Return the Identifier file format if it is not composite.
 
         Raise:
-            Type.CompositeError: The Type has more than one section
-                or more than one subsection
+            Identifier.CompositeError: The Identifier has more than one rank_1
+                or more than one rank_2
                 or more than one file format.
 
         Exemples:
             TODO
         """
         try:
-            file_format_set = self._section_tree[self.section][self.subsection]
-            if len(file_format_set) > 1:
-                raise self.CompositeError('Type has multiple file formats')
+            rank_3_set = self._rank_1_map[self._rank_1][self._rank_2]
+            if len(rank_3_set) > 1:
+                raise self.CompositeError(
+                    'Identifier has multiple rank 3 values')
         except self.CompositeError as err:
-            raise self.CompositeError('Type.file_format is undefined') from err
-        return list(file_format_set)[0]
+            raise self.CompositeError(
+                'Identifier.rank_3 is undefined') from err
+        return list(rank_3_set)[0]
 
     @property
     def tuple(self):
         try:
-            return (self.section, self.subsection, self.file_format)
+            return (self._rank_1, self._rank_2, self._rank_3)
         except self.CompositeError as err:
             raise self.CompositeError('Not representable as a tuple') from err
 
-    def __or__(self, other: Type) -> Type:  # noqa: D105
-        return Type._from_subtypes(self, other)
+    def __or__(self, other: Identifier) -> Identifier:
+        return type(self)._from_components(self, other)
 
-    def __add__(self, other: Type) -> Type:  # noqa: D105
+    def __add__(self, other: Identifier) -> Identifier:
         return self | other
 
-    def __eq__(self, other: Type) -> bool:
-        return self._section_tree == other._section_tree
+    def __eq__(self, other: Identifier) -> bool:  # noqa: D105
+        return self._rank_1_map == other._rank_1_map
 
-    def __le__(self, other: Type) -> bool:
-        """Test whether every subtype in self is in other."""
-        return self.subtypes <= other.subtypes
+    def __le__(self, other: Identifier) -> bool:
+        return self.components <= other.components
 
-    def __ge__(self, other: Type) -> bool:
-        """Test whether every subtype in other is in self."""
-        return self.subtypes >= other.subtypes
+    def __ge__(self, other: Identifier) -> bool:
+        return self.components >= other.components
 
-    def __lt__(self, other: Type) -> bool:
-        return self.subtypes < other.subtypes
+    def __lt__(self, other: Identifier) -> bool:
+        return self.components < other.components
 
-    def __gt__(self, other: Type) -> bool:
-        return self.subtypes > other.subtypes
+    def __gt__(self, other: Identifier) -> bool:
+        return self.components > other.components
 
-    def __contains__(self, item: Type) -> bool:
+    def __contains__(self, item: Identifier) -> bool:
         return self >= item
 
     def __hash__(self):
         return hash(tuple([subtype.tuple
-                           for subtype in self._sorted_subtypes()]))
+                           for subtype in self._sorted_components]))
 
     def __repr__(self) -> str:  # noqa: D105
         try:
-            return ('Type('
-                    f'{self.section}, {self.subsection}, {self.file_format}'
+            return (f'{type(self).__name__}('
+                    f'{self._rank_1}, {self._rank_2}, {self._rank_3}'
                     ')')
         except self.CompositeError:
-            return ' | '.join(repr(type_) for type_ in self.subtypes)
+            return ' | '.join(repr(id_)
+                              for id_ in self._sorted_components)
 
     def __str__(self) -> str:  # noqa: D105
         try:
-            return '/'.join([self.section, self.subsection, self.file_format])
+            return f'{self._rank_1}/{self._rank_2}/{self._rank_3}'
         except self.CompositeError:
-            return '{' + ', '.join(str(type_) for type_ in self.subtypes) + '}'
+            return '{' + ', '.join(str(id_)
+                                   for id_ in self._sorted_components) + '}'
 
-    def _sorted_subtypes(self) -> List[Type]:
-        return [
-            Type(section=section,
-                 subsection=subsection,
-                 file_format=file_format)
-            for section, subsection_tree in sorted(self._section_tree.items())
-            for subsection, file_format_set in sorted(subsection_tree.items())
-            for file_format in sorted(file_format_set)]
+    @property
+    def _sorted_components(self) -> List[Identifier]:
+        return [type(self)(rank_1, rank_2, rank_3)
+                for rank_1, subsection_tree in sorted(self._rank_1_map.items())
+                for rank_2, rank_3_set in sorted(subsection_tree.items())
+                for rank_3 in sorted(rank_3_set)]
 
-    @staticmethod
-    def _from_subtypes(*subtypes: Type) -> Type:
-        composite_type = Type()
-        composite_type._section_tree = Type._merge_sections(
-            *[type_._section_tree
-              for type_ in subtypes])
-        return composite_type
+    @classmethod
+    def _from_components(cls, *components: Identifier) -> Identifier:
+        """Build composite Identifier from components.
 
-    @staticmethod
-    def _merge_sections(*section_maps: SectionTree) -> SectionTree:
-        section_maps = [deepcopy(map_) for map_ in section_maps]
+        Examples:
+            >>> Identifier._from_components(Identifier(1, 2, 3),
+            ...                             Identifier(1, 2, 4))
+            Identifier(1, 2, 3) | Identifier(1, 2, 4)
+        """
+        composite_id = cls()
+        composite_id._rank_1_map = cls._merge_ranks_1(
+            *[type_._rank_1_map
+              for type_ in components])
+        return composite_id
+
+    @classmethod
+    def _merge_ranks_1(cls, *rank_1_maps: Rank1Map) -> Rank1Map:
+        rank_1_maps = [deepcopy(map_) for map_ in rank_1_maps]
         common_keys = reduce(operator.and_,
-                             (set(map_.keys()) for map_ in section_maps))
+                             (set(map_.keys()) for map_ in rank_1_maps))
         merged = {key: val
-                  for map_ in section_maps
+                  for map_ in rank_1_maps
                   for key, val in map_.items()}
         for key in common_keys:
-            merged[key] = Type._merge_file_formats(
+            merged[key] = cls._merge_ranks_2(
                 *[map_[key]
-                  for map_ in section_maps
+                  for map_ in rank_1_maps
                   if key in map_.keys()])
         return merged
 
-    @staticmethod
-    def _merge_subsections(*subsection_maps: SubsectionTree) -> SubsectionTree:
-        subsection_maps = [deepcopy(map_) for map_ in subsection_maps]
+    @classmethod
+    def _merge_ranks_2(cls, *rank_2_maps: Rank2Map) -> Rank2Map:
+        rank_2_maps = [deepcopy(map_) for map_ in rank_2_maps]
         common_keys = reduce(operator.and_,
-                             (set(map_.keys()) for map_ in subsection_maps))
+                             (set(map_.keys()) for map_ in rank_2_maps))
         merged = {key: val
-                  for map_ in subsection_maps
+                  for map_ in rank_2_maps
                   for key, val in map_.items()}
         for key in common_keys:
-            merged[key] = Type._merge_file_formats(
+            merged[key] = cls._merge_ranks_3(
                 *[map_[key]
-                  for map_ in subsection_maps
+                  for map_ in rank_2_maps
                   if key in map_.keys()])
         return merged
 
-    @staticmethod
-    def _merge_file_formats(*file_format_sets: FileFormatSet) -> FileFormatSet:
-        return reduce(operator.or_, file_format_sets)
+    @classmethod
+    def _merge_ranks_3(cls, *rank_3_sets: Rank3Set) -> Rank3Set:
+        return reduce(operator.or_, rank_3_sets)
 
     class Error(Exception):
-        """Base exception for Type identifier."""
+        """Base exception for Identifier identifier."""
 
     class CompositeError(Error):
         """Exeption related to composite Types."""
+
+
+class Type(Identifier):
+    """Identifie a data type."""
+
+    Section = Optional[str]
+    Subsection = Optional[str]
+    FileFormat = Optional[str]
+
+    def __init__(self,
+                 section: Section = None,
+                 subsection: Subsection = None,
+                 file_format: FileFormat = None):
+        super().__init__(rank_1=section,
+                         rank_2=subsection,
+                         rank_3=file_format)
+
+    @property
+    def section(self) -> Section:
+        return self._rank_1
+
+    @property
+    def subsection(self) -> Subsection:
+        return self._rank_2
+
+    @property
+    def file_format(self) -> FileFormat:
+        return self._rank_3
+
+
+class Sequence(Identifier):
+    """Identifie a data sequence."""
+
+    Road = Optional[int]
+    Record = Optional[int]
+    Camera = Optional[int]
+
+    def __init__(self,
+                 road: Road = None,
+                 record: Record = None,
+                 camera: Camera = None):
+        super().__init__(rank_1=road,
+                         rank_2=record,
+                         rank_3=camera)
+
+    @property
+    def road(self) -> Road:
+        return self._rank_1
+
+    @property
+    def record(self) -> Record:
+        return self._rank_2
+
+    @property
+    def camera(self) -> Camera:
+        return self._rank_3
